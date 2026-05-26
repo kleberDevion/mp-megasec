@@ -24,4 +24,4 @@ dist-ssr
 *.sw?
 server/*
 !server/main.ps
-testes/
+testes
