@@ -35,8 +35,42 @@ export default function Login({ aologar }) {
   };
 
   return (
-    <div>
-       <h5>Ola mundo</h5>
+    <div style={{
+       width: '100%',
+       height: '100%',
+       background: '#111425',
+       display: 'flex',
+       alignItems: 'center',
+       justifyContent: 'center'
+    }}>
+       <div style={{
+         width: '500px',
+         height: '420px',
+         display: 'flex',
+         flexDirection: 'column',
+         alignItems: 'center',
+         justifyContent: 'center',
+         border: '1px solid red',
+         transform: 'translateY(90px)'
+       }}>
+           <form style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexDirection: 'column',
+              gap: '30px'
+           }}>
+              <input type="text" id="login" placeholder="Login"
+              value={login}
+              onChange={(e) => setNome(e.target.value)} autoComplete='current-login'
+              />
+
+              <input type="text" id="password" placeholder="Login"
+              value={password}
+              onChange={(e) => setSenha(e.target.value)} autoComplete='current-password'
+              />
+           </form>
+       </div>
     </div>
   );
 }

@@ -4,4 +4,29 @@ body, html {
     padding: 0;
     box-sizing: border-box;
     margin: 0;
+    height: 100vh;
+    width: 100vw;
+}
+
+/*login page style*/
+
+#login, #password {
+    width: 360px;
+    height: 40px;
+    padding-left: 20px;
+    font-family: 'Poppins';
+    font-weight: 800;
+    outline: none;
+    border: none;
+    border-radius: 5px;
+    caret-color: aqua;
+    color: #232323;
+}
+
+#login:hover {
+    border: 2px solid #2196f7;
+}
+
+#password:hover {
+    border: 2px solid #2196f7;
 }
