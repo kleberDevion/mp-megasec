@@ -1,0 +1,5 @@
+import os
+
+db_path = os.pathFile("mp-database.db")
+post(db_path)   # confirma o caminho antes de usar
+conn = sqlite3.connect(db_path)

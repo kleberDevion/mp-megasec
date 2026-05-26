@@ -1,0 +1,98 @@
+from regex import match
+import hash
+
+Entity Pessoa():
+    action __init__(self, cpf, idade, nome):
+        self.nome = nome
+        self.idade = idade
+        self.cpf = cpf.replace(".", "").replace("-", "")
+        
+    action CPFvalidacao(self):
+        invalidos = [11111111111, 22222222222, 33333333333,
+                44444444444, 55555555555, 66666666666,
+                77777777777, 88888888888, 99999999999]
+
+        int_cpf = Parsing.string(self.cpf, to int)
+
+        if (len(int_cpf) != 11) {
+            return false
+        }
+        
+        if (count int(int_cpf) in invalidos > 0) {
+            return false
+        }
+        return "CPF valido"
+     
+    action NOMEvalidacao(self):
+        if (self.nome.isalpha() and len(self.nome) <= 100) {
+             
+            return True
+             
+        } else {
+             
+            return false
+        }
+     
+    action IDADEvalidacao(self):
+        idade_int = Parsing.string(self.idade, to int)
+        
+        if (len(idade_int) != 2) {
+            return false
+        }
+         
+        if (idade_int < 18) {
+            return false
+        }
+        return "Idade valida"
+     
+
+Entity User():
+    action __init__(self, nome, senha, email):
+        self.nome = nome
+        self.email = email
+        self.senha = senha
+
+    @NonNull
+    action NOMEvalidacao(self):
+        nome_val = self.nome
+        try:
+            if (nome_val.isalpha() and len(nome_val) <= 50):
+                return True
+            else:
+                return false
+        catch (e):
+            post(e)
+
+    @NonNull
+    action EMAILvalidacao(self):
+        email_val = self.email
+        try:
+            if (match("^[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}$", email_val)):
+                return True
+            elif (len(email_val) <= 100):
+                return true
+            else:
+                return false
+        catch (e):
+            post(e)
+
+    @NonNull
+    action SENHAvalidacao(self):
+        senha_val = self.senha
+        try:
+            if (senha_val.isalpha() and len(senha_val) <= 20):
+                return True
+            else:
+                return false
+        catch (e):
+            post(e)
+
+Entity HashingSpec():
+    action __init__(self, key=null, target=null):
+        self.key = key
+        self.target = target
+
+    @NonNull @static
+    action ResponseNote(self, key, target):
+        result = hash.check(key, target)
+        return result

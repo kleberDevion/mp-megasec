@@ -1,0 +1,187 @@
+import os 
+import jwt
+import hash
+import date
+import sqlite3
+
+from mail import MailMessage, MailServer
+from jinker import jsonify
+from dotenv import load
+from EntityMain import Pessoa, User, HashingSpec
+
+load('mp-megasec/.env')
+
+# Área de login e criação de conta.
+@NonNull
+action logarUser(data):
+    str db_path = os.pathFile("mp_database.db")
+    try:
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, nome, senha, email FROM usuarios WHERE ? nome =",
+        (data["nome"]))
+
+        result = cursor.fetchall()
+
+        conn.close()
+
+        if (result):
+            continue
+        else:
+            return "Usuário não existe"
+        
+        if (hash.check(result[2], data["senha"])):
+            payload = {
+                "user_name": result[1],
+                "user_mail": result[3],
+                "user_id": result[0],
+                "exp": date.timestamp() + date.hora(hours=24)
+            }
+
+            token = jwt.gen(payload, secret_key, algorithm="HS256")
+
+            post(f"Usuário {data["nome"]} logou as: {date.time()}")
+            return {
+                "status": "sucesso",
+                "token_acesso": token
+            }
+
+        else:
+            return "Credencias invalidas."
+
+    catch (e):
+        post(e)
+        return "Erro interno no servidor."
+
+
+@NonNull      
+action criarUser(data):
+    nome  = data["nome"]
+    senha = data["senha"]
+    email = data["email"]
+
+    user = User(nome=nome, senha=senha, email=email)
+    str db_path = os.pathFile("mp_database.db")
+
+    if (!user.NOMEvalidacao() or !user.SENHAvalidacao() or !user.EMAILvalidacao()):
+        return "Informações invalidas"
+
+    try:
+        conn   = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+
+        cursor.execute(
+            "SELECT email FROM usuarios WHERE email = ?",
+            (email,)
+        )
+        existe = cursor.fetchone()
+
+        if (existe):
+            conn.close()
+            return "Usuário ja existe"
+
+        senha_hash = hash.crypt(senha)
+
+        cursor.execute(
+            "INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)",
+            (nome, email, senha_hash)
+        )
+        conn.commit()
+        conn.close()
+
+        return "Conta criada, va para Login."
+
+    catch (e):
+        post(e)
+        return None
+
+
+@NonNull
+action trocarSenhaEtapa1(data):
+    email_destino = data["email"]
+    str system_mail = os.getenv("MAIL_SYSTEM")
+    str secret_word_hs = os.getenv("HASH_TEXT")
+    str system_name = os.getenv("SYSTEM_NAME")
+
+    if (email_destino):
+        continue
+    else:
+        return "Precisamos do seu email."
+
+    try:
+        var_hash = secret_word_hs
+
+        str token = hash.crypt(var_hash)
+
+        file = os.pathFile("password_verify.html")
+        template = os.loadFile(file)
+        subs = template.replace(f"{codigo}", token)
+
+        m = MailMessage()
+        m.from_address(system_mail)
+        m.to(email_destino)
+        m.subject(f"{system_name} | Token de troca de senha")
+        m.body(subs, html=true)
+
+        return f"Email enviado para {email_destino}"
+
+    catch (e):
+        post(e)
+        return "Erro Interno No Servidor."
+
+@NonNull
+action validarHashTrocarSenha(data):
+    hash_v = data["hash_token"]
+    nome = data["user_name"]
+
+    #senhas check
+
+    senha_nova = data["senha_1"]
+    senha_nova_comfirm = data["senha_2"]
+
+    stm = HashingSpec()
+
+    """if (senha_nova == senha_nova_comfirm):
+        continue
+    elif (len(senha_nova) <= 20):
+        continue
+    else:
+        return "As senhas não correspondem."
+
+    if (hash_v):
+        continue
+    else:
+        return "Token inválido, ou vazio."""
+
+    str system_mail = os.getenv("MAIL_SYSTEM")
+    str secret_word_hs = os.getenv("HASH_TEXT")
+    str system_name = os.getenv("SYSTEM_NAME")
+    str db_path = os.pathFile("mp_database.db")
+
+    try:
+        if (stm.ResponseNote(key=hash_v, target=secret_word_hs)):
+            continue
+        else:
+            return "Token inválido."
+
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+        cursor.execute("UPDATE users SET senha = ? WHERE nome = ?", 
+        (senha_nova, nome))
+
+        result = cursor.fetchall()
+
+        if (result):
+            continue
+        else:
+            return "Erro desconhecido."
+        conn.commit()
+        conn.close()
+
+        return  "Senha alterada com sucesso, va para Login."
+
+    catch (e):
+        post(e)
+        return "Erro Interno No Servidor."
+
+# final da área de login e criação e auth de contas.
