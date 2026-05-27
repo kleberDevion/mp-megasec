@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-export default function Login({ aologar }) {
+export default function Login({ aoLogar }) {
   const [login, setNome] = useState('');
   const [password, setSenha] = useState('');
 
@@ -8,29 +8,36 @@ export default function Login({ aologar }) {
     if (e) e.preventDefault();
 
     try {
-      const response = await fetch("http://0.0.0.0:9090/pages/login", {
+      const response = await fetch("http://localhost:9090/pages/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          login: login,
-          password: password,
+          nome: login,
+          senha: password,
         })
       });
 
       if (response.ok) {
         const dados = await response.json();
-        console.log(dados);
+        console.log(dados.token);
 
-        localStorage.setItem("token", dados.token);
-        aoLogar(dados.token);
+        const user = {
+           id: dados.id,
+           nome: dados.user_name,
+           email: dados.user_mail,
+           token: dados.token
+        }
+
+        localStorage.setItem("user", JSON.stringify(user));
+
+        aoLogar(user);
       } else {
         console.log("Verifique suas credencias");
       }
     } catch (error) {
       console.log("Erro de conexao ou erro interno no servidor", error);
-      alert("Servidor offline");
     }
   };
 
@@ -65,10 +72,14 @@ export default function Login({ aologar }) {
               onChange={(e) => setNome(e.target.value)} autoComplete='current-login'
               />
 
-              <input type="text" id="password" placeholder="Login"
+              <input type="text" id="password" placeholder="Senha"
               value={password}
               onChange={(e) => setSenha(e.target.value)} autoComplete='current-password'
               />
+
+              <button type="submit" id="btn-login" form='form' onClick={(e) => handleLogin(e)}>
+                 Entrar
+              </button>
            </form>
        </div>
     </div>

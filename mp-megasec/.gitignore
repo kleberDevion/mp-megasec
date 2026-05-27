@@ -24,4 +24,4 @@ dist-ssr
 *.sln
 *.sw?
 /server/*
-!/server/main.ps
+!/server/*.ps

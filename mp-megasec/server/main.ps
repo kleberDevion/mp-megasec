@@ -5,10 +5,7 @@ import jwt
 from user_controll import logarUser, criarUser, trocarSenhaEtapa1, validarHashTrocarSenha
 
 ap = Jinker(__name__, oauth={
-    poolip: True,
-    tls: true,
-    rate: 100, 
-    bloq: 1
+    poolip: True
 })
 cors(
     options=["POST", "GET", "DELETE", "PUT", "PATCH"],

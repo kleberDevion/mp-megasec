@@ -4,6 +4,7 @@ import Home from './components/Home'
 import Crm from './components/Crm'
 import Financeiro from './components/Financeiro'
 import ConfiguracoesGerais from './components/ConfiguracoesGerais'
+import Sidebar from './components/Sidebar'
 
 export default function App() {
   const [logado, setLogado] = useState(!!localStorage.getItem('token'));
@@ -24,7 +25,7 @@ export default function App() {
         {!logado && <Login aoLogar={realizarLogin} />}
         {logado && (
         <>
-          {logado && <Home mudarDePagina={setPaginaHome} aoSair={fazerLogout} />}
+          {logado && <Sidebar mudarDePagina={setPaginaHome} aoSair={fazerLogout} />}
           <main style={{ flex: 1, height: '100%' }}>
             {paginaHome === 'Home' && <Home />}
             {paginaHome === 'Portabilidade' && <Crm />}

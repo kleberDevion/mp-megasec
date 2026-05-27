@@ -205,14 +205,6 @@ export default function Sidebar({ mudarDePagina, aoSair }) {
           >
             <i className="ri-logout-box-line"></i>
           </button>
-          <h5
-            style={{
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            {usuario ? usuario.nome : "Visitante"}
-          </h5>
         </div>
       </div>
     </nav>
