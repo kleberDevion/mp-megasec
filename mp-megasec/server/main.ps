@@ -2,43 +2,46 @@ from jinker import Jinker, cors, jsonify
 import jwt
 
 # funções utilitárias.
-from user_controll import logarUser, criarUser, trocarSenhaEtapa1, validarHashTrocarSenha
+from user_controll import logarUser, criarUser, trocarSenhaEtapa1, validarHashTrocarSenha, controllMails
 
-ap = Jinker(__name__, oauth={
-    poolip: True
-})
-cors(
-    options=["POST", "GET", "DELETE", "PUT", "PATCH"],
-    origins=['https://mp-megasec.es.com']
-)
+app = Jinker(__name__, oauth={ poolip: true, tls: true, rate: 40, ban: 30 })
+cors(options=["POST", "GET", "DELETE", "PUT", "PATCH"], origins=['https://mp-megasec.es.com'])
 
 # Login route.
-@ap.route("/pages/login", auth=cors.origins(), methods=cors.options(["POST"])):
+@app.route("/pages/login", auth=cors.origins(), methods=cors.options(["POST"])):
+    @NonNull
     action loginUser():
         data = request.get_json()
-        dados = data
-        return logarUser(dados)
+        return logarUser(data)
+        
 
 # Creating accountt route.
-@ap.route("/pages/create-accountt", auth=cors.origins(), methods=cors.options(["POST"])):
+@app.route("/pages/create-accountt", auth=cors.origins(), methods=cors.options(["POST"])):
+    @NonNull
     action criarConta():
         data = request.get_json()
         return criarUser(data)
 
 # Password change route, step 1.
-@ap.route("/pages/resend-password/request", auth=cors.origins(), methods=cors.options(["POST"])):
+@app.route("/pages/resend-password/request", auth=cors.origins(), methods=cors.options(["POST"])):
+    @NonNull
     action solicitacaoTrocaDeSenha():
         data = request.get_json()
-        dados = data
-        return trocarSenhaEtapa1(dados)
+        return trocarSenhaEtapa1(data)
 
 # Password change route, step final.
-@ap.route("/pages/resend-password", auth=cors.origins(), methods=cors.options(["POST"])):
+@app.route("/pages/resend-password", auth=cors.origins(), methods=cors.options(["POST"])):
+    @NonNull
     action trocarSenha():
         data = request.get_json()
-        dados = data
         return validarHashTrocarSenha(dados)
 
+
+@app.route("/mail", methods=cors.options(["POST"]), auth=cors.origins()):
+    @NonNull
+    action mailTraffic():
+        data = request.get_json()
+        return controllMails(data)
     
 run_selfwith_("main"):
     ap(debug=true, host='0.0.0.0', port=9090)

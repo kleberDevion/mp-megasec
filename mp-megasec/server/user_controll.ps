@@ -200,3 +200,36 @@ action validarHashTrocarSenha(data):
         return "Erro Interno No Servidor."
 
 # final da área de login e criação e auth de contas.
+
+// emails controll
+
+@NonNull 
+action controllMails(data):
+    destino = data["destinatario"]
+    remetente = data["remetente"]
+    id = data["id"]
+    nome = data["user_name"]
+    assunto = data["assunto"]
+
+    db_path = os.getenv("CAIXA")
+
+    try:
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+        cursor.execute("SELECT senha_app_mail FROM usuarios WHERE id = ?",
+        (id,))
+        result = cursor.fetchone()
+
+        if (!result):
+            s = MailServer()
+            s.conn('gmail.com')
+
+            m = MailMessage()
+            m.from_address(remetente)
+            m.to(destino)
+            m.subject(assunto)
+            m.
+            // logic inversa, se tiver algo pra body vai body se nao outro if com attach
+
+    catch (e):
+        post(e)
